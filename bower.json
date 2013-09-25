@@ -1,0 +1,14 @@
+{
+  "name": "impress-zh",
+  "version": "0.0.1",
+  "homepage": "https://github.com/zuzana/impress-zh",
+  "authors": [
+    "Zuzana Harcarikova"
+  ],
+  "description": "This is a fork of a great presentation framework impress.js that was created as a quick fix of issues that arouse when I was trying to use it together with Backbone.js Router.",
+  "main": "./js/impress-zh.js",
+  "keywords": [
+    "impress"
+  ],
+  "license": "MIT"
+}
