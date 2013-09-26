@@ -464,7 +464,7 @@
         // with a transition `duration` optionally given as second parameter.
         var goto = function ( el, duration ) {
            
-            if ( !el.id || !initialized || !(el = getStep(el)) ) {
+            if ( !el || !initialized || !(el = getStep(el)) ) {
                  //body.classList.remove("impress-on-" + activeStep.id);
                 return false;
             }
@@ -805,8 +805,8 @@
                 if ( href && href.substring(0, api.baseHash.length-1) === api.baseHash ) {
                     target = document.getElementById( href.slice(1) );
                 } else {
-                    document.body.className="";
-                    document.body.setAttribute("style","");
+                    /*document.body.className="";
+                    document.body.setAttribute("style","");*/
 
                      /*
                     if(api.impressSupported){
