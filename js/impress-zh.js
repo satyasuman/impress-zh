@@ -40,7 +40,8 @@
     // `pfx` is a function that takes a standard CSS property name as a parameter
     // and returns it's prefixed version valid for current browser it runs in.
     // The code is heavily inspired by Modernizr http://www.modernizr.com/
-    var pfx = (function () {   
+    var pfx = (function () {
+    console.log("pfx");    
         var style = document.createElement('dummy').style,
             prefixes = 'Webkit Moz O ms Khtml'.split(' '),
             memory = {};
@@ -68,7 +69,8 @@
     
     // `arraify` takes an array-like object and turns it into real Array
     // to make all the Array.prototype goodness available.
-    var arrayify = function ( a ) {  
+    var arrayify = function ( a ) {
+        console.log("arrayify");    
         return [].slice.call( a );
     };
     
@@ -76,6 +78,7 @@
     // given as `el`. It runs all property names through `pfx` function to make
     // sure proper prefixed version of the property is used.
     var css = function ( el, props ) {
+        console.log("css");
         var key, pkey;
         for ( key in props ) {
             if ( props.hasOwnProperty(key) ) {
@@ -92,12 +95,14 @@
     // it into a number. If it is not possible it returns 0 (or other value
     // given as `fallback`).
     var toNumber = function (numeric, fallback) {
+        console.log("toNumber");
         return isNaN(numeric) ? (fallback || 0) : Number(numeric);
     };
     
     // `byId` returns element with given `id` - you probably have guessed that ;)
     // (ZH:)
     var byId = function ( id ) {
+        console.log("byId");
         var elementId;
         if (id.indexOf('/') !== -1){
             elementId = id.split('/').pop();
@@ -110,6 +115,7 @@
     // `$` returns first element for given CSS `selector` in the `context` of
     // the given element or whole document.
     var $ = function ( selector, context ) {
+        console.log("$");
         context = context || document;
         return context.querySelector(selector);
     };
@@ -117,6 +123,7 @@
     // `$$` return an array of elements for given CSS `selector` in the `context` of
     // the given element or whole document.
     var $$ = function ( selector, context ) {
+        console.log("$$");
         context = context || document;
         return arrayify( context.querySelectorAll(selector) );
     };
@@ -124,6 +131,7 @@
     // `triggerEvent` builds a custom DOM event with given `eventName` and `detail` data
     // and triggers it on element given as `el`.
     var triggerEvent = function (el, eventName, detail) {
+        console.log("triggerEvent");
         var event = document.createEvent("CustomEvent");
         event.initCustomEvent(eventName, true, true, detail);
         el.dispatchEvent(event);
@@ -158,8 +166,10 @@
     // `getElementFromHash` returns an element located by id from hash part of
     // window location.
     var getElementFromHash = function () {
+        console.log("getElementFromHash");
         // get id from url # by removing `#` or `#/` from the beginning,
         // so both "fallback" `#slide-id` and "enhanced" `#/slide-id` will work
+        console.log("got " + window.location.hash.replace(/^#\/?/,"") );
         return byId( window.location.hash.replace(/^#\/?/,"") );
     };
     
@@ -187,6 +197,7 @@
     
     // CHECK SUPPORT
     var body = document.body;
+    console.log("var body = document.body;");
     
     var ua = navigator.userAgent.toLowerCase();
     var impressSupported = 
@@ -209,6 +220,8 @@
         body.classList.remove("impress-not-supported");
         body.classList.add("impress-supported");
     }
+
+    console.log("?impressSupported? " + impressSupported);
     
     // GLOBALS AND DEFAULTS
     
@@ -216,6 +229,7 @@
     // Yes, this means you can have more than one instance on a page, but I'm not
     // sure if it makes any sense in practice ;)
     var roots = {};
+    console.log("var roots = {}");
     
     // some default config values.
     var defaults = {
@@ -240,16 +254,19 @@
     // for a presentation based on the element with given id ('impress'
     // by default).
     var impress = window.impress = function ( rootId ) {
+        console.log("impress");
         
         // If impress.js is not supported by the browser return a dummy API
         // it may not be a perfect solution but we return early and avoid
         // running code that may use features not implemented in the browser.
         if (!impressSupported) {
+            console.log("returning empty");
             return {
                 init: empty,
                 goto: empty,
                 prev: empty,
-                next: empty
+                next: empty,
+                impressSupported: impressSupported
             };
         }
         
@@ -265,26 +282,34 @@
         
         // data of all presentation steps
         var stepsData = {};
+        console.log("stepsData");
         
         // element of currently active step
         var activeStep = null;
+        console.log("activeStep");
         
         // current state (position, rotation and scale) of the presentation
         var currentState = null;
+        console.log("currentState");
         
         // array of step elements
         var steps = null;
+        console.log("steps");
         
         // configuration options
         var config = null;
+        console.log("config");
 
         // scale factor of the browser window
         var windowScale = null;        
         
         // root presentation elements
         var root = byId( rootId );
+        console.log("root");
+        console.log(root);
 
         var canvas = document.createElement("div");
+        console.log("canvas created");
         
         var initialized = false;
         
@@ -298,11 +323,13 @@
         
         // reference to last entered step
         var lastEntered = null;
+        console.log("lastEntered");
         
         // `onStepEnter` is called whenever the step element is entered
         // but the event is triggered only if the step is different than
         // last entered step.
         var onStepEnter = function (step) {
+            console.log("onStepEnter");
             if (lastEntered !== step) {
                 triggerEvent(step, "impress:stepenter");
                 lastEntered = step;
@@ -313,6 +340,7 @@
         // but the event is triggered only if the step is the same as
         // last entered step.
         var onStepLeave = function (step) {
+            console.log("onStepLeave");
             if (lastEntered === step) {
                 triggerEvent(step, "impress:stepleave");
                 lastEntered = null;
@@ -322,6 +350,7 @@
         // `initStep` initializes given step element by reading data from its
         // data attributes and setting correct styles.
         var initStep = function ( el, idx ) {
+            console.log("initStep");
             var data = el.dataset,
                 step = {
                     translate: {
@@ -343,6 +372,8 @@
             }
             
             stepsData["impress-" + el.id] = step;
+            console.log("stepsData");
+            console.log(stepsData);
             
             css(el, {
                 position: "absolute",
@@ -356,11 +387,13 @@
         
         // `init` API function that initializes (and runs) the presentation.
         var init = function () {
+            console.log("init");
             stepsData = null;
             stepsData = {};
-
-            if (initialized) { return; }
-
+            if (initialized) { 
+                console.log("returning bc. already initialized");
+                return; }
+            
             //(ZH:)
             //(ZH:2)
             //TODO:
@@ -430,6 +463,7 @@
             
             // get and init steps
             steps = $$(".step", root);
+            console.log("steps length" + steps.length);
             steps.forEach( initStep );
             
             // set a default initial state of the canvas
@@ -449,6 +483,7 @@
         // is given step element with such id is returned, if DOM element is given it is returned
         // if it is a correct step element.
         var getStep = function ( step ) {
+            console.log("getStep " + step);
             if (typeof step === "number") {
                 step = step < 0 ? steps[ steps.length + step] : steps[ step ];
             } else if (typeof step === "string") {
@@ -464,8 +499,8 @@
         // with a transition `duration` optionally given as second parameter.
         var goto = function ( el, duration ) {
            
-            if ( !el || !initialized || !(el = getStep(el)) ) {
-                 //body.classList.remove("impress-on-" + activeStep.id);
+            if ( !el.id || !initialized || !(el = getStep(el)) ) {
+                console.log("step not initialized");
                 return false;
             }
             
@@ -480,16 +515,19 @@
             window.scrollTo(0, 0);
             
             var step = stepsData["impress-" + el.id];
+            console.log("priradeny step");
+            console.log(step);
+
 
             if ( activeStep ) {
-                
-                
+                console.log("active STEP");
                 activeStep.classList.remove("active");
                 body.classList.remove("impress-on-" + activeStep.id);
             }
             el.classList.add("active");
             
             body.classList.add("impress-on-" + el.id);
+            console.log("added class: impress-on" + el.id);
             
             // compute target state of the canvas based on given step
             var target = {
@@ -527,6 +565,7 @@
             
             // trigger leave of currently active element (if it's not the same step again)
             if (activeStep && activeStep !== el) {
+                console.log("onStepLeave with " + activeStep);
                 onStepLeave(activeStep);
             }
             
@@ -594,6 +633,7 @@
         
         // `prev` API function goes to previous step (in document order)
         var prev = function () {
+            console.log("prev");
             var prev = steps.indexOf( activeStep ) - 1;
             prev = prev >= 0 ? steps[ prev ] : steps[ steps.length-1 ];
             
@@ -602,6 +642,7 @@
         
         // `next` API function goes to next step (in document order)
         var next = function () {
+            console.log("next");
             var next = steps.indexOf( activeStep ) + 1;
             next = next < steps.length ? steps[ next ] : steps[ 0 ];
             
@@ -657,17 +698,22 @@
                 window.location.hash = lastHash = baseHash + "/" + event.target.id;
             }, false);
             
-            window.addEventListener("hashchange", function () {
-                // When the step is entered hash in the location is updated
-                // (just few lines above from here), so the hash change is 
-                // triggered and we would call `goto` again on the same element.
-                //
-                // To avoid this we store last entered hash and compare.
-                if (window.location.hash !== lastHash) {
-                    goto( getElementFromHash() );
-                }
-            }, false);
+            //(ZH:4)
+            if (impressSupported){
+                window.addEventListener("hashchange", function () {
+                    // When the step is entered hash in the location is updated
+                    // (just few lines above from here), so the hash change is 
+                    // triggered and we would call `goto` again on the same element.
+                    //
+                    // To avoid this we store last entered hash and compare.
+                    console.log("last hash was " + lastHash);
+                    console.log("current hash is " + window.location.hash);
+                    if (window.location.hash !== lastHash) {
+                        goto( getElementFromHash() );
+                    }
+                }, false);
             
+            }
             // START 
             // by selecting step defined in url or first step of the presentation
             goto(getElementFromHash() || steps[0], 0);
@@ -686,10 +732,9 @@
         //baseHash = window.location.hash.split('/').shift();
         
         // store and return API for given impress.js root element
+        console.log("registering root: " + rootId);
         roots = null;
             roots = {};
-        
-
         return (roots[ "impress-root-" + rootId ] = {
             init: init,
             goto: goto,
@@ -697,8 +742,7 @@
             prev: prev,
             //(ZH:)
             baseHash: baseHash,
-            impressSupported: impressSupported,
-            rootId: rootId //TODO:
+            impressSupported: impressSupported //TODO:
         });
     };
     
@@ -732,7 +776,9 @@
     };
     
     // wait for impress.js to be initialized
-    document.addEventListener("impress:init", function (event) {
+    //(ZH:4) Because of compatibility mode had to add this one if.
+    if (document.addEventListener) {
+        document.addEventListener("impress:init", function (event) {
         // Getting API from event data.
         // So you don't event need to know what is the id of the root element
         // or anything. `impress:init` event data gives you everything you 
@@ -805,8 +851,8 @@
                 if ( href && href.substring(0, api.baseHash.length-1) === api.baseHash ) {
                     target = document.getElementById( href.slice(1) );
                 } else {
-                    /*document.body.className="";
-                    document.body.setAttribute("style","");*/
+                    document.body.className="";
+                    document.body.setAttribute("style","");
 
                      /*
                     if(api.impressSupported){
@@ -862,6 +908,8 @@
         }, 250), false);
         
     }, false);
+    }
+    
         
 })(document, window);
 
